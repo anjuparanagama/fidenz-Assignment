@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <path d="M15,45 Q30,35 45,40 Q60,45 75,40 Q60,55 45,50 Q30,45 15,45" fill="#FFFFFF" stroke="#E6E6E6" stroke-width="2"/>
+    <path d="M25,60 Q40,50 55,55 Q70,60 85,55 Q70,70 55,65 Q40,60 25,60" fill="#FFFFFF" stroke="#E6E6E6" stroke-width="2"/>
+</svg>
