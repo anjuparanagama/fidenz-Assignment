@@ -80,7 +80,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[url('/bgtwo.jpg')] bg-black/50 bg-cover bg-fixed bg-center overscroll-none">   
+    <div className="min-h-screen flex flex-col bg-[url('/bg.jpg')] bg-black/50 bg-cover bg-fixed bg-center overscroll-none">   
       <main className="grow px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 overscroll-none">
         <div className="max-w-7xl mx-auto flex flex-col gap-6 mb-6">
           {/* Mobile: Time and User Row, Desktop: All Three in Row */}
