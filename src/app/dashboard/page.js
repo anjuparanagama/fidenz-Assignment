@@ -36,7 +36,7 @@ export default function Dashboard() {
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-900 to-indigo-900">
+      <div className="flex items-center justify-center min-h-screen">
         <div className="relative">
           <div className="w-16 h-16 border-t-4 border-blue-200 border-solid rounded-full animate-spin"></div>
           <div className="mt-4 text-xl font-semibold text-blue-200">Loading...</div>
@@ -69,7 +69,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-900 to-indigo-900">
+      <div className="flex items-center justify-center min-h-screen">
         <div className="relative">
           <div className="w-16 h-16 border-t-4 border-blue-200 border-solid rounded-full animate-spin"></div>
           <div className="mt-4 text-xl font-semibold text-blue-200">Loading weather data...</div>
@@ -115,7 +115,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[url('/bg.jpg')] bg-black/50 bg-cover bg-fixed bg-center overscroll-none">
+    <div className="min-h-screen flex flex-col bg-blue-1000 bg-[url('/bg.jpg')] bg-cover bg-fixed bg-center bg-blend-overlay bg-black/50 overscroll-none">
       <main className="grow px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 overscroll-none">
         <div className="max-w-7xl mx-auto flex flex-col gap-6 mb-6">
           {/* Mobile: Time and User Row, Desktop: All Three in Row */}

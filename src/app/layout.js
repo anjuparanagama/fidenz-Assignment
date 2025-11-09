@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Meteo Earth - Weather Cast Provider",
   description: "Created by Anjula Nawoda",
+  images: ["/site-logo.png"],
 };
 
 export default function RootLayout({ children }) {
