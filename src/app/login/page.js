@@ -33,10 +33,10 @@ export default function LoginPage() {
             Sign in with Auth0
           </a>
 
-          <p className="mt-4 text-sm text-blue-200/70">Don’t have an account? A demo account will be created on first sign-in with Auth0.</p>
+          <p className="mt-4 text-sm text-blue-200/70">Only PreDefined Users Can Log to this system.</p>
         </div>
 
-        <footer className="mt-8 text-sm text-blue-100/60">© {new Date().getFullYear()} Meteo Earth</footer>
+  <footer className="mt-8 text-sm text-center text-blue-100/60">© {new Date().getFullYear()} Meteo Earth</footer>
       </section>
     </main>
   )
