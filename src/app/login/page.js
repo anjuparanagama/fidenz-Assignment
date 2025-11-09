@@ -23,7 +23,7 @@ export default function LoginPage() {
               Sign in with Auth0
             </a>
 
-            <p className="mt-4 text-sm text-blue-200/70"><span className="text-blue-500 font-semibold">Note : </span>Only Pre-Defined Users Can Log to this system.</p>
+            <p className="mt-4 text-sm text-blue-200/70"><span className="text-black-900 font-semibold">Note : </span>Only Pre-Defined Users Can Log to this system.</p>
           </div>
         </section>
       </div>
