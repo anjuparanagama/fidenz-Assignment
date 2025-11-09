@@ -16,6 +16,8 @@ export default function Dashboard() {
   const [newCity, setNewCity] = useState('');
   const [addingCity, setAddingCity] = useState(false);
   const [addError, setAddError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
   // Fetch weather data on component mount and setup auto-refresh
   useEffect(() => {
@@ -237,6 +239,10 @@ export default function Dashboard() {
       
       setNewCity('');
       setAddError(null);
+      
+      // Show success message for 3 seconds
+      setSuccessMessage(`✓ "${cityWeather.cityName}" added successfully!`);
+      setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err) {
       setAddError('Failed to add city. Please try again later.');
       console.error('Error adding city:', err);
@@ -250,13 +256,36 @@ export default function Dashboard() {
     e.preventDefault();
     e.stopPropagation();
     
-    const updatedData = weatherData.filter((city) => city.cityCode !== cityCode);
+    // Find the city name for the confirmation dialog
+    const cityToDelete = weatherData.find((city) => city.cityCode === cityCode);
+    setConfirmDelete({
+      cityCode,
+      cityName: cityToDelete?.cityName || 'this city',
+    });
+  };
+
+  // Confirm city deletion
+  const confirmCityDeletion = () => {
+    if (!confirmDelete) return;
+
+    const updatedData = weatherData.filter((city) => city.cityCode !== confirmDelete.cityCode);
     setWeatherData(updatedData);
     
     // Save user-added cities to localStorage
     const userCities = updatedData.filter((city) => city.isUserAdded);
     localStorage.setItem('userAddedCities', JSON.stringify(userCities));
     localStorage.setItem('weatherData', JSON.stringify(updatedData));
+    
+    // Show success message
+    setSuccessMessage(`✓ "${confirmDelete.cityName}" removed successfully!`);
+    setTimeout(() => setSuccessMessage(null), 3000);
+    
+    setConfirmDelete(null);
+  };
+
+  // Cancel city deletion
+  const cancelCityDeletion = () => {
+    setConfirmDelete(null);
   };
 
   // Color gradients for weather cards
@@ -399,6 +428,15 @@ export default function Dashboard() {
             </div>
           </div>
         )}
+
+        {/* Success message for adding city */}
+        {successMessage && (
+          <div className="w-full max-w-md px-4 sm:px-0">
+            <div className="bg-green-500/20 border border-green-500 text-green-200 px-4 py-2 rounded-md text-sm animate-pulse">
+              {successMessage}
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Main content - weather cards grid */}
@@ -414,7 +452,7 @@ export default function Dashboard() {
               {city.isUserAdded && (
                 <button
                   onClick={(e) => handleRemoveCity(e, city.cityCode)}
-                  className="absolute top-3 right-3 z-30  text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors"
+                  className="absolute top-3 right-3 z-30 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors"
                   aria-label="Remove city"
                   title="Remove city"
                 >
@@ -563,6 +601,32 @@ export default function Dashboard() {
           </Link>
         ))}
       </main>
+
+      {/* Confirmation Modal for City Deletion */}
+      {confirmDelete && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-lg p-6 max-w-sm w-full shadow-2xl border border-gray-700">
+            <h3 className="text-xl font-bold text-white mb-2">Delete City</h3>
+            <p className="text-gray-300 mb-6">
+              Are you sure you want to delete <span className="font-semibold text-red-400">"{confirmDelete.cityName}"</span> from your list?
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={cancelCityDeletion}
+                className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmCityDeletion}
+                className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-semibold"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="mt-auto py-5 text-center bg-gray-700 text-amber-50 text-xs">
