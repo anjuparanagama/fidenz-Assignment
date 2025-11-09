@@ -4,7 +4,7 @@ export const metadata = {
 
 export default function LoginPage() {
   return (
-    <main className="min-h-screen flex flex-col items-center bg-[url('/bg.jpg')] bg-cover bg-scroll md:bg-fixed bg-center">
+  <main className="min-h-screen flex flex-col items-center bg-[url('/bg.jpg')] bg-cover bg-fixed bg-center">
       <div className="grow flex items-center justify-center w-full">
         <section className="w-full max-w-sm sm:max-w-md md:max-w-lg bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 sm:p-8 md:p-12 mx-4 sm:mx-6">
           <div className="flex flex-col items-center gap-4 mb-6">
