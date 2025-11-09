@@ -3,7 +3,12 @@
 html {
   scroll-behavior: smooth;
   overscroll-behavior-y: none;
+  /* Background image (place bg.jpg in the public/ folder) */
   background-color: #000;
+  background-image: url('/bg.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
 }
 
 body {
@@ -13,6 +18,22 @@ body {
   overscroll-behavior-y: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Optional semi-opaque overlay to improve readability over background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Ensure app content sits above overlay */
+#__next, main, .min-h-screen {
+  position: relative;
+  z-index: 1;
 }
 
 @media (max-width: 640px) {
@@ -43,4 +64,39 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #666;
+}
+
+/* Dashboard: use public/Designer.png as decorative background (scoped) */
+.dashboard-bg::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  /* combine a soft gradient with the Designer.png artwork */
+  background-image: linear-gradient(180deg, rgba(2,6,23,0.35), rgba(124,58,237,0.18)), url('/Designer.png');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  pointer-events: none;
+  z-index: -1; /* sit behind content and the global overlay (overlay uses z-index: 0) */
+  opacity: 0.98;
+  filter: saturate(0.95) contrast(0.98);
+}
+
+/* Slight darkening to ensure text stays readable on small screens */
+@media (max-width: 640px) {
+  .dashboard-bg::before { background-image: linear-gradient(180deg, rgba(2,6,23,0.5), rgba(124,58,237,0.22)), url('/Designer.png'); }
+}
+
+/* Modal / enlarged card styles */
+.modal-backdrop {
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px) saturate(1.05);
+}
+.modal-backdrop > div {
+  max-height: 90vh;
+  overflow: auto;
+}
+.modal-backdrop::-webkit-scrollbar {
+  height: 8px;
 }

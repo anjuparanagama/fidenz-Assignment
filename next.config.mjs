@@ -8,6 +8,16 @@ const nextConfig = {
         hostname: 'openweathermap.org',
         pathname: '/img/wn/**',
       },
+      {
+        protocol: 'https',
+        hostname: 's.gravatar.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.auth0.com',
+        pathname: '/avatars/**',
+      },
     ],
   },
 };
