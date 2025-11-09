@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { fetchCityWeatherData } from '@/middleware/page';
+import { fetchCityWeatherData, fetchWeatherByCity } from '@/middleware/page';
 import { useUser } from '@auth0/nextjs-auth0/client';
 
 export default function Dashboard() {
@@ -14,17 +14,33 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [newCity, setNewCity] = useState('');
+  const [addingCity, setAddingCity] = useState(false);
+  const [addError, setAddError] = useState(null);
 
   // Fetch weather data on component mount and setup auto-refresh
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const data = await fetchCityWeatherData();
-        setWeatherData(data);
+        const defaultData = await fetchCityWeatherData();
+        
+        // Load user-added cities from localStorage
+        const savedUserCities = localStorage.getItem('userAddedCities');
+        let userCities = [];
+        if (savedUserCities) {
+          try {
+            userCities = JSON.parse(savedUserCities);
+          } catch (err) {
+            console.error('Error parsing user cities:', err);
+          }
+        }
+        
+        // Combine default and user-added cities
+        const allData = [...defaultData, ...userCities];
+        setWeatherData(allData);
         setError(null);
         // Cache data for offline access
-        localStorage.setItem('weatherData', JSON.stringify(data));
+        localStorage.setItem('weatherData', JSON.stringify(allData));
       } catch (err) {
         setError('Failed to fetch weather data. Please try again later.');
         console.error('Error fetching weather data:', err);
@@ -182,12 +198,65 @@ export default function Dashboard() {
   };
 
   // Handle city addition (placeholder for now)
-  const handleAddCity = (e) => {
+  const handleAddCity = async (e) => {
     e.preventDefault();
-    if (newCity.trim()) {
-      alert(`Adding city: ${newCity}`);
+    if (!newCity.trim()) return;
+
+    setAddingCity(true);
+    setAddError(null);
+
+    try {
+      const cityWeather = await fetchWeatherByCity(newCity.trim());
+      
+      if (!cityWeather) {
+        setAddError(`City "${newCity}" not found. Please check the spelling and try again.`);
+        setAddingCity(false);
+        return;
+      }
+
+      // Check if city is already added
+      const alreadyExists = weatherData.some(
+        (city) => city.cityCode === cityWeather.cityCode || 
+                  city.cityName.toLowerCase() === cityWeather.cityName.toLowerCase()
+      );
+
+      if (alreadyExists) {
+        setAddError(`"${cityWeather.cityName}" is already added.`);
+        setAddingCity(false);
+        return;
+      }
+
+      // Update weather data
+      const updatedData = [...weatherData, cityWeather];
+      setWeatherData(updatedData);
+      
+      // Save user-added cities to localStorage
+      const userCities = updatedData.filter((city) => city.isUserAdded);
+      localStorage.setItem('userAddedCities', JSON.stringify(userCities));
+      localStorage.setItem('weatherData', JSON.stringify(updatedData));
+      
       setNewCity('');
+      setAddError(null);
+    } catch (err) {
+      setAddError('Failed to add city. Please try again later.');
+      console.error('Error adding city:', err);
+    } finally {
+      setAddingCity(false);
     }
+  };
+
+  // Handle city removal
+  const handleRemoveCity = (e, cityCode) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const updatedData = weatherData.filter((city) => city.cityCode !== cityCode);
+    setWeatherData(updatedData);
+    
+    // Save user-added cities to localStorage
+    const userCities = updatedData.filter((city) => city.isUserAdded);
+    localStorage.setItem('userAddedCities', JSON.stringify(userCities));
+    localStorage.setItem('weatherData', JSON.stringify(updatedData));
   };
 
   // Color gradients for weather cards
@@ -310,15 +379,26 @@ export default function Dashboard() {
             placeholder="Enter a city"
             value={newCity}
             onChange={(e) => setNewCity(e.target.value)}
-            className="flex-1 px-4 py-2 rounded-md sm:rounded-l-md sm:rounded-r-none text-sm bg-gray-800 text-gray-300 placeholder-gray-500 focus:outline-none w-full"
+            disabled={addingCity}
+            className="flex-1 px-4 py-2 rounded-md sm:rounded-l-md sm:rounded-r-none text-sm bg-gray-800 text-gray-300 placeholder-gray-500 focus:outline-none w-full disabled:opacity-50"
           />
           <button
             type="submit"
-            className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 px-4 py-2 font-semibold rounded-md sm:rounded-r-md text-white text-sm"
+            disabled={addingCity}
+            className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 px-4 py-2 font-semibold rounded-md sm:rounded-r-md text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Add City
+            {addingCity ? 'Adding...' : 'Add City'}
           </button>
         </form>
+        
+        {/* Error message for adding city */}
+        {addError && (
+          <div className="w-full max-w-md px-4 sm:px-0">
+            <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-2 rounded-md text-sm">
+              {addError}
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Main content - weather cards grid */}
@@ -329,7 +409,30 @@ export default function Dashboard() {
             href={`/dashboard/${city.cityCode}`}
             className="rounded-md overflow-hidden shadow-xl w-full hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-150"
           >
-            <article className="rounded-md overflow-hidden w-full cursor-pointer">
+            <article className="rounded-md overflow-hidden w-full cursor-pointer relative">
+              {/* Close button for user-added cities */}
+              {city.isUserAdded && (
+                <button
+                  onClick={(e) => handleRemoveCity(e, city.cityCode)}
+                  className="absolute top-3 right-3 z-30  text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors"
+                  aria-label="Remove city"
+                  title="Remove city"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              )}
               {/* Weather card header section */}
               <div
                 className="relative p-6 sm:p-6 md:p-8 text-white"

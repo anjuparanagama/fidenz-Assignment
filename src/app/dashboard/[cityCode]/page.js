@@ -22,7 +22,23 @@ export default function CityWeather({ params }) {
       try {
         setLoading(true);
         const data = await fetchCityWeatherData();
-        const cityData = data.find((c) => c.cityCode === cityCode);
+        
+        // Try to find in default cities first
+        let cityData = data.find((c) => c.cityCode === cityCode);
+        
+        // If not found and it's a user-added city, check localStorage
+        if (!cityData && cityCode.startsWith('user_')) {
+          const savedUserCities = localStorage.getItem('userAddedCities');
+          if (savedUserCities) {
+            try {
+              const userCities = JSON.parse(savedUserCities);
+              cityData = userCities.find((c) => c.cityCode === cityCode);
+            } catch (err) {
+              console.error('Error parsing user cities:', err);
+            }
+          }
+        }
+        
         if (!cityData) {
           setError('City not found');
           return;
