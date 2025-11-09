@@ -36,10 +36,10 @@ export default function Dashboard() {
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="relative">
+      <div className="flex items-center justify-center min-h-screen w-screen">
+        <div className="relative flex flex-col items-center">
           <div className="w-16 h-16 border-t-4 border-blue-200 border-solid rounded-full animate-spin"></div>
-          <div className="mt-4 text-xl font-semibold text-blue-200">Loading...</div>
+          <div className="mt-4 text-xl font-semibold text-blue-200">Loading weather data...</div>
         </div>
       </div>
     );
@@ -69,8 +69,8 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="relative">
+      <div className="flex items-center justify-center min-h-screen w-screen">
+        <div className="relative flex flex-col items-center">
           <div className="w-16 h-16 border-t-4 border-blue-200 border-solid rounded-full animate-spin"></div>
           <div className="mt-4 text-xl font-semibold text-blue-200">Loading weather data...</div>
         </div>
